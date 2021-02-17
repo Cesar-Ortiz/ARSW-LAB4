@@ -11,12 +11,18 @@ import edu.eci.arsw.blueprints.persistence.BlueprintNotFoundException;
 import edu.eci.arsw.blueprints.persistence.BlueprintPersistenceException;
 import edu.eci.arsw.blueprints.persistence.BlueprintsPersistence;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
+
+import org.springframework.stereotype.Service;
 
 /**
  *
  * @author hcadavid
  */
+
+@Service
 public class InMemoryBlueprintPersistence implements BlueprintsPersistence{
 
     private final Map<Tuple<String,String>,Blueprint> blueprints=new HashMap<>();
@@ -41,9 +47,39 @@ public class InMemoryBlueprintPersistence implements BlueprintsPersistence{
 
     @Override
     public Blueprint getBlueprint(String author, String bprintname) throws BlueprintNotFoundException {
-        return blueprints.get(new Tuple<>(author, bprintname));
+    	
+    	Blueprint blu=blueprints.get(new Tuple<>(author, bprintname));
+    	if(blu==null) {
+    		throw new BlueprintNotFoundException("The blueprint not exist");
+    	}	
+    	return blu;
     }
-
     
+    @Override
+    public Set<Blueprint> getBlueprintsByAuthor(String author) throws BlueprintNotFoundException {
+    	Set<Blueprint> conjunto=new HashSet<Blueprint>();
+    	
+    	for (Map.Entry<Tuple<String,String>, Blueprint> entry : blueprints.entrySet()) {
+    		if(entry.getKey().getElem1() == author) {
+    			
+    			conjunto.add(blueprints.get(entry.getKey()));
+    		}
+    	    //System.out.println("clave=" + entry.getKey() + ", valor=" + entry.getValue());
+    	}
+    	if(conjunto.size()==0) {
+    		throw new BlueprintNotFoundException("The author not exist");
+    	}
+    	return conjunto;
+    }		
+    
+    @Override
+    public Set<Blueprint> getAllBlueprints(){
+    	Set<Blueprint> lista=new HashSet<Blueprint>();
+    	for (Map.Entry<Tuple<String,String>, Blueprint> entry : blueprints.entrySet()) {
+    		lista.add(blueprints.get(entry.getKey()));
+    	    //System.out.println("clave=" + entry.getKey() + ", valor=" + entry.getValue());
+    	}
+    	return lista;
+    }
     
 }
