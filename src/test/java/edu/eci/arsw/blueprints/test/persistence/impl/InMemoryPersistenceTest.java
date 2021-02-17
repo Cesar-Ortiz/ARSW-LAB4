@@ -191,6 +191,5 @@ public class InMemoryPersistenceTest {
         }
         
        assertEquals(gc.getAllBlueprints().size(),2);
-        
     }
 }
